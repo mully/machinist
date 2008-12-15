@@ -4,7 +4,7 @@ require 'machinist'
 # This is a stub version of ActiveRecord that has just enough functionality to
 # keep Machinist happy.
 class InactiveRecord
-  include Machinist::ActiveRecordExtensions
+  include Machinist::Extensions
 
   def initialize(attributes = nil)
     attributes.each do |key, value|
