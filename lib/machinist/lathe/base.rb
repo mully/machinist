@@ -3,7 +3,8 @@ module Machinist
     class Base
   
       def initialize(klass, attributes)
-        @object = klass.new(attributes)
+        @object = klass.new
+        attributes.each {|key, value| @object.send("#{key}=", value) }
         @assigned_attributes = attributes.keys.map(&:to_sym)
       end
 

@@ -6,10 +6,19 @@ require 'machinist'
 class InactiveRecord
   include Machinist::Extensions
 
-  def initialize(attributes = nil)
+  def initialize(attributes = {})
+    self.protected_attributes ||= []
+    attributes = attributes.reject {|key, value| protected_attributes.include?(key) }
     attributes.each do |key, value|
       self.send("#{key}=", value)
     end
+  end
+
+  class_inheritable_accessor :protected_attributes
+    
+  def self.attr_protected(attribute)
+    self.protected_attributes ||= []
+    self.protected_attributes << attribute
   end
   
   def save!;  @saved = true;          end
@@ -20,7 +29,12 @@ class InactiveRecord
 end
 
 class Person < InactiveRecord
+  attr_accessor :id
   attr_accessor :name
+  attr_accessor :type
+  attr_accessor :password
+  
+  attr_protected :password
 end
 
 class Post < InactiveRecord
@@ -107,6 +121,30 @@ describe Machinist do
         body { title }
       end
       Post.make.body.should == "Test"
+    end
+    
+    it "should allow setting a protected attribute in the blueprint" do
+      Person.blueprint do
+        password "Test"
+      end
+      Person.make.password.should == "Test"
+    end
+    
+    it "should allow overriding a protected attribute" do
+      Person.blueprint do
+        password "Test"
+      end
+      Person.make(:password => "New").password.should == "New"
+    end
+    
+    it "should allow setting the id attribute in a blueprint" do
+      Person.blueprint { id "test" }
+      Person.make.id.should == "test"
+    end
+    
+    it "should allow setting the type attribute in a blueprint" do
+      Person.blueprint { type "test" }
+      Person.make.type.should == "test"
     end
   end
   
