@@ -26,6 +26,9 @@ module Machinist
         end
       end
   
+      def save
+      end
+      
     end
   end
 end

@@ -5,7 +5,7 @@ module Machinist
     end
   
     module ClassMethods
-      def blueprint(lathe_class = Machinist::Lathe::ActiveRecord, &blueprint)
+      def blueprint(lathe_class = Machinist::Lathe::Base, &blueprint)
         @blueprint   = blueprint
         @lathe_class = lathe_class
       end
