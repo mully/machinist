@@ -2,6 +2,8 @@ require 'active_support'
 require 'active_record'
 require 'sham'
 require 'machinist/active_record'
+require 'couchrest'
+require 'machinist/couchrest'
  
 module Machinist
 
@@ -44,8 +46,10 @@ module Machinist
     def method_missing(symbol, *args, &block)
       if @assigned_attributes.has_key?(symbol)
         @object.send(symbol)
-      elsif @object.class.reflect_on_association(symbol) && !@object.send(symbol).nil?
-        @object.send(symbol)
+      elsif (@object.class.respond_to?(:reflect_on_association) && @object.class.reflect_on_association(symbol)) && !@object.send(symbol).nil?
+        @object.send(symbol)        
+      # elsif @object.respond_to?(symbol)
+      #   @object.send(symbol)
       else
         @object.send("#{symbol}=", generate_attribute(symbol, args, &block))
       end
@@ -55,9 +59,9 @@ module Machinist
       value = if block_given?
         yield
       elsif args.empty?
-        association = @object.class.reflect_on_association(attribute)
+        association = @object.class.reflect_on_association(attribute) if @object.class.respond_to?(:reflect_on_association) 
         if association
-          association.class_name.constantize.make(args.first || {})
+         association.class_name.constantize.make(args.first || {})
         else
           Sham.send(attribute)
         end
