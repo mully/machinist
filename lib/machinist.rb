@@ -1,9 +1,11 @@
 require 'active_support'
 require 'active_record'
+require 'mongo_record'
 require 'sham'
 require 'machinist/active_record'
 require 'couchrest'
 require 'machinist/couchrest'
+require 'machinist/mongo_record'
  
 module Machinist
 
